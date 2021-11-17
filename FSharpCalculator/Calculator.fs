@@ -12,7 +12,7 @@ module Calculator =
         PendingOperation : MathOperation
         }
 
-    let InitState() : State =
+    let InitState () : State =
         { Display = "0"; PendingOperation = None; Memory = 0 }
 
     let MapAluError (aluError : AluError) : string =
@@ -20,9 +20,12 @@ module Calculator =
         | DivisionByZero -> "Division by zero"
 
     let RunOperation (current : State) : string =        
-        ALU.RunOperation(float current.Memory, float current.Display, current.PendingOperation) |> string
+        let result = ALU.RunOperation (float current.Memory) (float current.Display) (current.PendingOperation)
+        match result with
+        | Ok r -> r |> string
+        | Error er -> MapAluError er
 
-    let AppendDigitToDisplay(digit : Digit, current : State) : State =
+    let AppendDigitToDisplay (digit : Digit, current : State) : State =
         { current with Display = AppendDigit(digit, current.Display) }
 
     let InsertOperation (operation : MathOperation, current : State) : State =
